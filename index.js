@@ -1,5 +1,6 @@
 
 const excelUrl = 'https://matax123.github.io/knowyourdrug/list.xlsx';
+var tableObject = null;
 
 async function readExcel() {
     let response = await fetch(excelUrl);
@@ -48,13 +49,125 @@ function loadTable(data) {
     });
 }
 
+// global variables
+let table;
+let orderSelectValue = 'Name';
+let orderSelectDirection = 'asc';
+
+let orderButton = document.getElementById('orderButton');
+let orderDialog = document.getElementById('orderDialog');
+let orderSelect = document.getElementById('orderSelect');
+let refreshButton = document.getElementById('refreshButton');
+let refreshDialog = document.getElementById('refreshDialog');
+let expandButton = document.getElementById('expandButton');
+let expandDialog = document.getElementById('expandDialog');
+let downloadButton = document.getElementById('downloadButton');
+let commentButton = document.getElementById('commentButton');
+let commentDialog = document.getElementById('commentDialog');
+
+function closeDialogWhenClickedOutside(dialog) {
+    dialog.addEventListener('click', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog = event.clientX >= rect.left && event.clientX <= rect.right &&
+            event.clientY >= rect.top && event.clientY <= rect.bottom;
+
+        if (!isInDialog) {
+            dialog.close();
+        }
+    });
+}
+
+orderButton.addEventListener('click', function () {
+    orderDialog.showModal();
+})
+closeDialogWhenClickedOutside(orderDialog);
+
+function orderSelectChange(element) {
+    orderSelectValue = element.value;
+    orderTable(orderSelectValue, orderSelectDirection);
+}
+
+function orderDirectionChange(element) {
+    if (orderSelectDirection == 'desc') {
+        orderSelectDirection = 'asc';
+        element.style.transform = 'rotate(0deg)';
+    }
+    else {
+        orderSelectDirection = 'desc';
+        element.style.transform = 'rotate(180deg)';
+    }
+    orderTable(orderSelectValue, orderSelectDirection);
+}
+
+function orderTable(orderSelectValue, orderSelectDirection) {
+    let table = document.getElementById('table');
+    let tbody = table.getElementsByTagName('tbody')[0];
+    let rows = Object.values(tableObject);
+    rows.sort((a,b) => customCompare(a,b));
+    tbody.innerHTML = '';
+    rows.forEach((row) => {
+        let tr = document.createElement('tr');
+        
+        let html = `
+            <td class="border px-4 py-2">${row.Name}</td>
+            <td class="border px-4 py-2">${row.Origin}</td>
+            <td class="border px-4 py-2">${row.Action}</td>
+            <td class="border px-4 py-2">${row.Administration}</td>
+            <td class="border px-4 py-2">${row.Legal}</td>
+            <td class="border px-4 py-2">${row.SecondaryEffectProbability}</td>
+            <td class="border px-4 py-2">${row.SecondaryEffectSeverity}</td>
+        `
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+    });
+}
+
 window.onload = async function () {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     let workbook = await readExcel();
     let sheet = workbook.Sheets['Sheet1'];
     let data = XLSX.utils.sheet_to_json(sheet);
+    tableObject = data;
     loadTable(data);
     document.getElementById("loading").close();
     document.querySelector('.preload').classList.remove('preload');
+}
+
+// secondary functions
+
+function startsWithNumber(str) {
+    return /^\d/.test(str);
+}
+
+function customCompare(a, b) {
+    console.log(a, b);
+
+    console.log(orderSelectValue);
+    const aText = a[orderSelectValue];
+    const bText = b[orderSelectValue];
+    console.log(aText, bText);
+    const aStartsWithNumber = /^\d/.test(aText);
+    const bStartsWithNumber = /^\d/.test(bText);
+
+    if (aStartsWithNumber && !bStartsWithNumber && orderSelectDirection == 'asc') {
+        return 1; // aText starts with a number, should come after bText
+    }
+    if (aStartsWithNumber && !bStartsWithNumber && orderSelectDirection == 'desc') {
+        return -1; // aText starts with a number, should come after bText
+    }
+    if (!aStartsWithNumber && bStartsWithNumber && orderSelectDirection == 'asc') {
+        return -1; // bText starts with a number, should come after aText
+    }
+    if (!aStartsWithNumber && bStartsWithNumber && orderSelectDirection == 'desc') {
+        return 1; // bText starts with a number, should come after aText
+    }
+    else {
+        // If both or neither start with a number, compare normally
+        if(aText == null) console.log('aText is null');
+        if(bText == null) console.log('bText is null');
+        return orderSelectDirection === 'asc'
+        ? aText.localeCompare(bText, undefined, { numeric: true })
+        : bText.localeCompare(aText, undefined, { numeric: true });
+    }
 }
