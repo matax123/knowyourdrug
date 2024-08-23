@@ -122,6 +122,24 @@ function orderTable(orderSelectValue, orderSelectDirection) {
     });
 }
 
+function downloadFile() {
+    console.log(1)
+    let a = document.createElement('a');
+    a.href = excelUrl;
+    a.download = 'list.xlsx';
+    a.click();
+
+    // // Convert the JavaScript object to a worksheet
+    // const ws = XLSX.utils.json_to_sheet(tableObject);
+
+    // // Create a new workbook and append the worksheet
+    // const wb = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+    // // Generate Excel file and trigger download
+    // XLSX.writeFile(wb, 'data.xlsx');
+}
+
 window.onload = async function () {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -141,12 +159,8 @@ function startsWithNumber(str) {
 }
 
 function customCompare(a, b) {
-    console.log(a, b);
-
-    console.log(orderSelectValue);
     const aText = a[orderSelectValue];
     const bText = b[orderSelectValue];
-    console.log(aText, bText);
     const aStartsWithNumber = /^\d/.test(aText);
     const bStartsWithNumber = /^\d/.test(bText);
 
