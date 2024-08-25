@@ -1,4 +1,3 @@
-
 const excelUrl = 'https://matax123.github.io/knowyourdrug/list.xlsx';
 var tableObject = null;
 
@@ -53,6 +52,7 @@ function loadTable(data) {
 let table;
 let orderSelectValue = 'Name';
 let orderSelectDirection = 'asc';
+let dayTime = 'day';
 
 let orderButton = document.getElementById('orderButton');
 let orderDialog = document.getElementById('orderDialog');
@@ -65,21 +65,7 @@ let downloadButton = document.getElementById('downloadButton');
 let commentButton = document.getElementById('commentButton');
 let commentDialog = document.getElementById('commentDialog');
 
-function closeDialogWhenClickedOutside(dialog) {
-    dialog.addEventListener('click', (event) => {
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog = event.clientX >= rect.left && event.clientX <= rect.right &&
-            event.clientY >= rect.top && event.clientY <= rect.bottom;
 
-        if (!isInDialog) {
-            dialog.close();
-        }
-    });
-}
-
-orderButton.addEventListener('click', function () {
-    orderDialog.showModal();
-})
 closeDialogWhenClickedOutside(orderDialog);
 
 function orderSelectChange(element) {
@@ -103,11 +89,11 @@ function orderTable(orderSelectValue, orderSelectDirection) {
     let table = document.getElementById('table');
     let tbody = table.getElementsByTagName('tbody')[0];
     let rows = Object.values(tableObject);
-    rows.sort((a,b) => customCompare(a,b));
+    rows.sort((a, b) => customCompare(a, b));
     tbody.innerHTML = '';
     rows.forEach((row) => {
         let tr = document.createElement('tr');
-        
+
         let html = `
             <td class="border px-4 py-2">${row.Name}</td>
             <td class="border px-4 py-2">${row.Origin}</td>
@@ -140,6 +126,27 @@ function downloadFile() {
     // XLSX.writeFile(wb, 'data.xlsx');
 }
 
+closeDialogWhenClickedOutside(commentDialog);
+
+function changeDayTime() {
+    const dayIcon = document.getElementById('dayIcon');
+    const nightIcon = document.getElementById('nightIcon');
+    if (dayTime == 'day') {
+        dayTime = 'night';
+        document.body.classList = 'darkMode';
+        dayIcon.classList.add('hidden');
+        nightIcon.classList.remove('hidden');
+        localStorage.setItem('dayTime', 'night');
+    }
+    else {
+        dayTime = 'day';
+        document.body.classList = 'lightMode';
+        dayIcon.classList.remove('hidden');
+        nightIcon.classList.add('hidden');
+        localStorage.setItem('dayTime', 'day');
+    }
+}
+
 window.onload = async function () {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -148,6 +155,7 @@ window.onload = async function () {
     let data = XLSX.utils.sheet_to_json(sheet);
     tableObject = data;
     loadTable(data);
+
     document.getElementById("loading").close();
     document.querySelector('.preload').classList.remove('preload');
 }
@@ -178,10 +186,32 @@ function customCompare(a, b) {
     }
     else {
         // If both or neither start with a number, compare normally
-        if(aText == null) console.log('aText is null');
-        if(bText == null) console.log('bText is null');
+        if (aText == null) console.log('aText is null');
+        if (bText == null) console.log('bText is null');
         return orderSelectDirection === 'asc'
-        ? aText.localeCompare(bText, undefined, { numeric: true })
-        : bText.localeCompare(aText, undefined, { numeric: true });
+            ? aText.localeCompare(bText, undefined, { numeric: true })
+            : bText.localeCompare(aText, undefined, { numeric: true });
     }
+}
+
+function closeDialogWhenClickedOutside(dialog) {
+    dialog.addEventListener('mousedown', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog = event.clientX >= rect.left && event.clientX <= rect.right &&
+            event.clientY >= rect.top && event.clientY <= rect.bottom;
+
+        if (!isInDialog) {
+            dialog.close();
+        }
+    });
+}
+
+function openDialog(id) {
+    let dialog = document.getElementById(id);
+    dialog.showModal();
+}
+
+function closeDialog(id) {
+    let dialog = document.getElementById(id);
+    dialog.close();
 }
