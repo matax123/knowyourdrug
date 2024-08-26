@@ -52,7 +52,6 @@ function loadTable(data) {
 let table;
 let orderSelectValue = 'Name';
 let orderSelectDirection = 'asc';
-let dayTime = 'day';
 
 let orderButton = document.getElementById('orderButton');
 let orderDialog = document.getElementById('orderDialog');
@@ -133,22 +132,25 @@ function changeDayTime() {
     const nightIcon = document.getElementById('nightIcon');
     if (dayTime == 'day') {
         dayTime = 'night';
-        document.body.classList = 'darkMode';
         dayIcon.classList.add('hidden');
         nightIcon.classList.remove('hidden');
+        document.documentElement.setAttribute('theme', 'dark');
         localStorage.setItem('dayTime', 'night');
     }
     else {
         dayTime = 'day';
-        document.body.classList = 'lightMode';
         dayIcon.classList.remove('hidden');
         nightIcon.classList.add('hidden');
+        document.documentElement.setAttribute('theme', 'light');
         localStorage.setItem('dayTime', 'day');
     }
 }
 
 window.onload = async function () {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if(dayTime == 'day') dayIcon.classList.remove('hidden');
+    else nightIcon.classList.remove('hidden');
 
     let workbook = await readExcel();
     let sheet = workbook.Sheets['Sheet1'];

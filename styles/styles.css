@@ -5,17 +5,19 @@
     --colorBG1: rgb(250, 250, 250);
     --colorBG2: rgb(248, 135, 6);
     --colorBG3: rgb(255, 255, 255);
+    --colorBG4: rgb(255,255,255);
     --boxShadow1: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
 }
 
 :root[theme="dark"] {
     --color1: rgb(250, 250, 250);
-    --color2: rgb(250, 250, 240);
+    --color2: rgb(240, 240, 230);
     --color3: rgb(240, 240, 240);
     --colorBG1: rgb(100, 100, 100);
     --colorBG2: rgb(248, 135, 6);
     --colorBG3: rgb(120, 120, 120);
-    --boxShadow1: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+    --colorBG4: rgb(80, 80, 80);
+    --boxShadow1: 0px 5px 5px 0px rgba(0, 0, 0, 0.2);
     
     dialog::backdrop {
         background-color: rgba(0, 0, 0, 0.5);
@@ -24,7 +26,7 @@
 
 body {
     background-color: var(--colorBG3);
-    color: var(--color3) !important;
+    color: var(--color3);
 }
 
 .color1 {
@@ -44,6 +46,11 @@ body {
 .backgroundColor2 {
     background-color: var(--colorBG2);
 }
+
+.backgroundColor4{
+    background-color: var(--colorBG4);
+}
+
 
 /* LOADER */
 .lds-dual-ring {
@@ -90,8 +97,13 @@ body {
     opacity: 0;
     visibility: hidden;
     z-index: 10;
-    background-color: rgba(150,150,150, 0.5);
-    backdrop-filter: blur(3px);
+    background-color: rgba(255,255,255, 0.5);
+    backdrop-filter: blur(5px);
+    color: var(--color3);
+}
+
+:root[theme="dark"] #loading {
+    background-color: rgba(0,0,0, 0.33);
 }
 
 .preload {
@@ -100,9 +112,12 @@ body {
 
 /* TABLE */
 table {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--boxShadow1);
+    width: 100%;
+}
+
+table thead{
+    white-space: nowrap;  /* Prevent wrapping inside the container */
+    height: 60px;
 }
 
 table * {
@@ -111,6 +126,45 @@ table * {
 
 table tr:nth-child(even) {
     background-color: var(--colorBG1);
+}
+
+.tableContainer{
+    min-width: 100%;
+    overflow-x: auto;
+    box-shadow: var(--boxShadow1);
+    border-radius: 10px;
+}
+
+:root {
+    .tableContainer::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .tableContainer::-webkit-scrollbar-track {
+        background: rgb(255,255,255);
+        border-radius: 0px 0px 10px 10px;
+    }
+    
+    .tableContainer::-webkit-scrollbar-thumb {
+        background-color: rgb(220, 220, 220);
+        border-radius: 0px 0px 10px 10px;
+    }
+}
+
+:root[theme="dark"] {
+    .tableContainer::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .tableContainer::-webkit-scrollbar-track {
+        background: rgb(70,70,70);
+        border-radius: 0px 0px 10px 10px;
+    }
+    
+    .tableContainer::-webkit-scrollbar-thumb {
+        background-color: rgb(89, 89, 89);
+        border-radius: 0px 0px 10px 10px;
+    }
 }
 
 /* OTHERS */
